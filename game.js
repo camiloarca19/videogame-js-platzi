@@ -7,6 +7,12 @@ const buttonDown = document.querySelector('#down')
 const mensaje = document.querySelector('#vidas')
 const tiempo = document.querySelector('#time')
 const record = document.querySelector('#record')
+const cartelPerder = document.querySelector('#cartelPerder')
+const cartelGanar = document.querySelector('#cartelGanar')
+const mensajeRecord = document.querySelector('#mensaje-record')
+const puntuacion = document.querySelector('#puntuacion')
+
+
 window.addEventListener('load',setCanvasSize)
 window.addEventListener('resize',setCanvasSize)
 
@@ -116,11 +122,14 @@ function clearCanvas(){
 }
 function showTime(){
     if (playerPosition.x== startPosition.x &&playerPosition.y == startPosition.y && level == 0){
-        tiempo.textContent= 0
+        tiempo.textContent= "tiempo:" + 0
         timeStart = Date.now()
     }
     else{
-    tiempo.textContent = Date.now()- timeStart
+        cartelPerder.classList.add('ocultar')
+        cartelGanar.classList.add('ocultar')
+    tiempo.textContent = "tiempo:" + (Date.now() - timeStart)
+
     }
 }
 
@@ -132,7 +141,7 @@ function movePlayer(){
         }
         game.fillText(emojis['PLAYER'], (playerPosition.x)*elementSize, playerPosition.y*elementSize)
         mensaje.textContent = "Vidas: " + '💚'.repeat(lives)
-        record.textContent = localStorage.getItem('record')
+        record.textContent = "Record: " +localStorage.getItem('record')
     }
     
 function levelFail(){
@@ -140,7 +149,7 @@ function levelFail(){
         if(lives <= 0){
             level = 0;
             lives =3;
-            alert("Perdiste!!")
+            cartelPerder.classList.remove('ocultar')
             timeStart = 0;
             
         }
@@ -172,18 +181,26 @@ function moveByKeys(event){
     
     function winGame(){
         player_time= Date.now()-timeStart
-
-        if(player_time < localStorage.getItem('record')){
-            localStorage.setItem('record',finalTime-timeStart)
-
+        if(localStorage.getItem('record')== null){
+            localStorage.setItem('record',player_time)
+            mensajeRecord.textContent = "felicidates estableciste el record"
+            
         }
-        
+        if (player_time <= localStorage.getItem('record')){
+            localStorage.setItem('record',player_time)
+            
+            mensajeRecord.textContent = "felicidates superaste el record 🙌"
+        }
+        else{
+            mensajeRecord.textContent = "No superaste el record 🥺"
+        }
+         
         
         level = 0;
         lives = 3;
         
-        alert("ganaste!")
-        
+        cartelGanar.classList.remove('ocultar')
+        puntuacion.textContent = "tiempo: "+ player_time
         
         playerPosition.x = undefined
         playerPosition.y = undefined
